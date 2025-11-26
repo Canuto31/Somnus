@@ -27,11 +27,6 @@ public class PlayerController : MonoBehaviour
 
     private float moveSpeed = 5f;
 
-    //Player Rotation
-    private float mouseSensitivity = 150f;
-    private float xRotation = 0f;
-    private Vector2 lookInput;
-
     //----------Interactions----------
     public float meleeDuration = 0.2f;
 
@@ -40,6 +35,16 @@ public class PlayerController : MonoBehaviour
     private bool is2DModeOther = false;
 
     public Transform cameraPivot;
+
+    //----------First Person----------
+    public Transform cameraTransform;
+    public float sensitivity = 0.5f;
+    public float minLimit = -80f;
+    public float maxLimit = 80f;
+    private PlayerInputActions _inputAction;
+    private CharacterController _characterController;
+    private Vector2 _look;
+    private float _currentRotationY;
 
     void Start()
     {
@@ -50,26 +55,34 @@ public class PlayerController : MonoBehaviour
         vcam3D.enabled = true;
         vcam2D.enabled = false;
         vcam2DOther.enabled = false;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
-    void Update()
-    {
-        if (!is2DMode)
-        {
-            HandleLook();
-        }
-    }
 
     void FixedUpdate()
     {
         Vector3 moveDirection = default;
 
         MovePlayer(moveDirection);
+        if (!is2DMode)
+        {
+            Look();
+        }
     }
 
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        if (context.performed || context.canceled)
+        {
+            inputVector = context.ReadValue<Vector2>();
+
+            bool isMoving = inputVector.sqrMagnitude > 0.01f;
+
+            animator.SetBool("IsWalkingForward", isMoving);
+
+            Debug.Log("isMoving: " + isMoving);
+        }
+    }
+    
     private void MovePlayer(Vector3 moveDirection)
     {
         if (is2DMode && !is2DModeOther)
@@ -87,41 +100,30 @@ public class PlayerController : MonoBehaviour
 
         rb.MovePosition(rb.position + moveDirection * (moveSpeed * Time.fixedDeltaTime));
     }
-
-    public void OnMove(InputAction.CallbackContext context)
+    
+    public void OnLook(InputAction.CallbackContext context)
     {
-        if (context.performed || context.canceled)
+        if (context.performed)
         {
-            inputVector = context.ReadValue<Vector2>();
+            _look = context.ReadValue<Vector2>();
+        }
 
-            bool isMoving = inputVector.sqrMagnitude > 0.01f;
-
-            animator.SetBool("IsWalkingForward", isMoving);
-
-            Debug.Log("isMoving: " + isMoving);
+        if (context.canceled)
+        {
+            _look = Vector2.zero;
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context)
+    private void Look()
     {
-        lookInput = context.ReadValue<Vector2>();
+        Vector2 mouseNormalized = _look * sensitivity;
+
+        _currentRotationY = Mathf.Clamp(_currentRotationY - mouseNormalized.y, minLimit, maxLimit);
+        cameraTransform.localRotation = Quaternion.Euler(_currentRotationY, 0, 0);
+
+        transform.Rotate(Vector3.up * _look.x);
     }
-
-    private void HandleLook()
-    {
-        float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
-        float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
-
-        // Rotación horizontal del jugador (izquierda-derecha)
-        transform.Rotate(Vector3.up * mouseX);
-
-        // Rotación vertical SOLO del pivot de la cámara
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -80f, 80f);
-
-        cameraPivot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-    }
-
+    
     public void OnChangeMovement(InputAction.CallbackContext context)
     {
         if (context.performed)
