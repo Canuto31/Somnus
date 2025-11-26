@@ -10,10 +10,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     //Camera Components
-    [Header("Cameras")] public CinemachineCamera vcam3D;
+    [Header("Cameras")]
     public CinemachineCamera vcam2D;
-
-    public CinemachineCamera vcam2DOther;
 
     //Colliders Components
     public Collider meleeCollider;
@@ -52,9 +50,11 @@ public class PlayerController : MonoBehaviour
 
         meleeCollider.enabled = false;
 
-        vcam3D.enabled = true;
-        vcam2D.enabled = false;
-        vcam2DOther.enabled = false;
+        vcam2D.Priority.Enabled = false;
+        vcam2D.gameObject.SetActive(false);
+        
+        transform.position = new Vector3(-10.99936f, 4.489f, 12.96298f);
+        transform.rotation = Quaternion.Euler(0, 135.848f, 0);
     }
 
 
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour
     {
         if (is2DMode && !is2DModeOther)
         {
-            moveDirection = new Vector3(0f, 0f, inputVector.x);
+            moveDirection = new Vector3(0f, 0f, inputVector.x*-1);
         }
         else if (is2DMode && is2DModeOther)
         {
@@ -116,6 +116,8 @@ public class PlayerController : MonoBehaviour
 
     private void Look()
     {
+        if (!Application.isFocused) return;
+        
         Vector2 mouseNormalized = _look * sensitivity;
 
         _currentRotationY = Mathf.Clamp(_currentRotationY - mouseNormalized.y, minLimit, maxLimit);
@@ -133,18 +135,20 @@ public class PlayerController : MonoBehaviour
             {
                 rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX |
                                  RigidbodyConstraints.FreezeRotationZ;
-                vcam3D.Priority.Enabled = false;
                 vcam2D.Priority.Enabled = true;
-                vcam2DOther.Priority.Enabled = false;
-                transform.position = new Vector3(11.33f, 1.9f, 1.51f);
+                vcam2D.gameObject.SetActive(true);
+                cameraTransform.gameObject.SetActive(false);
+                transform.position = new Vector3(11.325f, 0.937f, 12.96298f);
+                transform.rotation = Quaternion.Euler(0, 180f, 0);
             }
             else
             {
                 rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-                vcam3D.Priority.Enabled = true;
                 vcam2D.Priority.Enabled = false;
-                vcam2DOther.Priority.Enabled = false;
-                transform.position = new Vector3(1.28f, 7.49f, 1.51f);
+                vcam2D.gameObject.SetActive(false);
+                cameraTransform.gameObject.SetActive(true);
+                transform.position = new Vector3(-10.99936f, 4.489f, 12.96298f);
+                transform.rotation = Quaternion.Euler(0, 135.848f, 0);
             }
         }
     }
@@ -160,16 +164,12 @@ public class PlayerController : MonoBehaviour
                 {
                     rb.constraints = RigidbodyConstraints.FreezeRotation;
                     transform.rotation = Quaternion.Euler(0f, 270f, 0f);
-                    vcam3D.Priority.Enabled = false;
                     vcam2D.Priority.Enabled = false;
-                    vcam2DOther.Priority.Enabled = true;
                 }
                 else
                 {
                     rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
-                    vcam3D.Priority.Enabled = false;
                     vcam2D.Priority.Enabled = true;
-                    vcam2DOther.Priority.Enabled = false;
                 }
             }
         }
