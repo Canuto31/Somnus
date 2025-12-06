@@ -34,7 +34,7 @@ public class GunRaycast : MonoBehaviour
         if (muzzleFlashPrefab != null && muzzlePoint != null)
         {
             GameObject flash = Instantiate(muzzleFlashPrefab, muzzlePoint.position, muzzlePoint.rotation);
-            Destroy(flash, 0.05f);
+            Destroy(flash, 0.15f);
         }
     }
 }

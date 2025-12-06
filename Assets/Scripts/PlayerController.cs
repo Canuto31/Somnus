@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     //Camera Components
     [Header("Cameras")]
     public CinemachineCamera vcam2D;
+    public CinemachineCamera vcam2DOther;
 
     //Colliders Components
     public Collider meleeCollider;
@@ -44,6 +45,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 _look;
     private float _currentRotationY;
 
+    private bool _invert2DMovement = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -52,6 +55,9 @@ public class PlayerController : MonoBehaviour
 
         vcam2D.Priority.Enabled = false;
         vcam2D.gameObject.SetActive(false);
+
+        vcam2D.Priority.Enabled = false;
+        vcam2DOther.gameObject.SetActive(false);
         
         transform.position = new Vector3(-10.99936f, 4.489f, 12.96298f);
         transform.rotation = Quaternion.Euler(0, 135.848f, 0);
@@ -66,6 +72,11 @@ public class PlayerController : MonoBehaviour
         if (!is2DMode)
         {
             Look();
+        }
+
+        if (rb.position.Equals(new Vector3(11.325f, 0.937f, 3.01f)))
+        {
+            transform.rotation = Quaternion.Euler(0, 270f, 0);
         }
     }
 
@@ -85,13 +96,10 @@ public class PlayerController : MonoBehaviour
     
     private void MovePlayer(Vector3 moveDirection)
     {
-        if (is2DMode && !is2DModeOther)
+        if (is2DMode)
         {
-            moveDirection = new Vector3(0f, 0f, inputVector.x*-1);
-        }
-        else if (is2DMode && is2DModeOther)
-        {
-            moveDirection = new Vector3(-inputVector.x, 0f, 0f);
+            float dir = _invert2DMovement ? -1f : 1f;
+            moveDirection = transform.forward * (inputVector.x * dir);
         }
         else
         {
@@ -133,8 +141,10 @@ public class PlayerController : MonoBehaviour
             is2DMode = !is2DMode;
             if (is2DMode)
             {
-                rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX |
-                                 RigidbodyConstraints.FreezeRotationZ;
+                /*rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX |
+                                 RigidbodyConstraints.FreezeRotationZ;*/
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
+
                 vcam2D.Priority.Enabled = true;
                 vcam2D.gameObject.SetActive(true);
                 cameraTransform.gameObject.SetActive(false);
@@ -163,13 +173,31 @@ public class PlayerController : MonoBehaviour
                 if (is2DModeOther)
                 {
                     rb.constraints = RigidbodyConstraints.FreezeRotation;
-                    transform.rotation = Quaternion.Euler(0f, 270f, 0f);
+                    //transform.rotation = Quaternion.Euler(0f, 270f, 0f);
+                    
+                    //rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
+                    
                     vcam2D.Priority.Enabled = false;
+                    vcam2D.gameObject.SetActive(false);
+                    
+                    vcam2DOther.Priority.Enabled = true;
+                    vcam2DOther.gameObject.SetActive(true);
+                    
+                    _invert2DMovement = !_invert2DMovement;
                 }
                 else
                 {
-                    rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
+                    //rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
+                    rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+                    
                     vcam2D.Priority.Enabled = true;
+                    vcam2D.gameObject.SetActive(true);
+                    
+                    vcam2DOther.Priority.Enabled = false;
+                    vcam2DOther.gameObject.SetActive(false);
+                    
+                    _invert2DMovement = !_invert2DMovement;
                 }
             }
         }
@@ -202,5 +230,18 @@ public class PlayerController : MonoBehaviour
         meleeCollider.enabled = true;
         yield return new WaitForSeconds(meleeDuration);
         meleeCollider.enabled = false;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("ChangeView"))
+        {
+            ChangeViewController trigger = collision.gameObject.GetComponent<ChangeViewController>();
+            
+            if (trigger != null) 
+            {
+                trigger.RotatePlayer();
+            }
+        }
     }
 }
