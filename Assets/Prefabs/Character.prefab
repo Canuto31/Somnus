@@ -79,13 +79,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1349995147660541176}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0.342, z: 0.514}
-  m_LocalScale: {x: 0.066758, y: 0.055678, z: 0.83485353}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.5620001, y: 2.4919996, z: 0.694}
+  m_LocalScale: {x: 0.066758, y: 0.055678, z: 0.8348536}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8351069411978379575}
-  m_Father: {fileID: 709155444265742843}
+  m_Father: {fileID: 2126501888325891926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8963735627221818375
 MeshFilter:
@@ -191,12 +191,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2029784139523888352}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.855}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.062, y: 2.15, z: 1.035}
   m_LocalScale: {x: 0.63761, y: 0.63761, z: 0.63761}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 709155444265742843}
+  m_Father: {fileID: 2126501888325891926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &3535467859197767583
 CapsuleCollider:
@@ -323,8 +323,6 @@ Transform:
   m_LocalScale: {x: 0.6, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3324720311340981725}
-  - {fileID: 4043867921247714901}
   - {fileID: 2126501888325891926}
   - {fileID: 247997717559389458}
   m_Father: {fileID: 0}
@@ -391,13 +389,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a379d50eccf5e5047ac8c75a0eb45190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  vcam3D: {fileID: 0}
   vcam2D: {fileID: 0}
   vcam2DOther: {fileID: 0}
   meleeCollider: {fileID: 3535467859197767583}
   animator: {fileID: 5432175576429456684}
   meleeDuration: 0.2
   cameraPivot: {fileID: 247997717559389458}
+  cameraTransform: {fileID: 0}
+  sensitivity: 0.5
+  minLimit: -80
+  maxLimit: 80
 --- !u!114 &234369109467837591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,7 +602,13 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: f60a3896ff5e2844c89baa04ea749985, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5f2330b845a53c9449091ba65854a562, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3324720311340981725}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5f2330b845a53c9449091ba65854a562, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4043867921247714901}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5f2330b845a53c9449091ba65854a562, type: 3}
 --- !u!4 &2126501888325891926 stripped
